@@ -23,21 +23,21 @@
    git clone [リポジトリURL]
    cd team-project
 
-## 仮想環境を作成・有効化
+2. 仮想環境を作成・有効化
    ```bash
    python -m venv venv
    source venv/bin/activate  # Linux/Mac
    venv\Scripts\activate     # Windows
 
-## 依存パッケージをインストール
+3. 依存パッケージをインストール
    ```bash
    pip install -r requirements.txt
 
-## マイグレーションを実行
+4. マイグレーションを実行
    ```bash
    python manage.py migrate
 
-## 開発用サーバーを起動
+5. 開発用サーバーを起動
    ```bash
    python manage.py runserver
 
