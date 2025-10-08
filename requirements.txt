@@ -1,1 +1,6 @@
-pip freeze > requirements.txt
+asgiref==3.9.2
+Django==5.2.6
+psycopg==3.2.10
+psycopg-binary==3.2.10
+sqlparse==0.5.3
+typing_extensions==4.15.0
