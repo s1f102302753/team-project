@@ -21,4 +21,19 @@
 1. リポジトリをクローン
    ```bash
    git clone [リポジトリURL]
-   cd digital-circulation
+   cd team-project
+
+## 仮想環境を作成・有効化
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+## 依存パッケージをインストール
+pip install -r requirements.txt
+
+## マイグレーションを実行
+python manage.py migrate
+
+## 開発用サーバーを起動
+python manage.py runserver
+
