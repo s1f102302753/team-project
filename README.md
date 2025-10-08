@@ -41,9 +41,11 @@
    ```bash
    python manage.py runserver
 
+---
 
 ## ディレクトリ構成
- team-project
+```text
+team-project
 ├── config
 │   ├── settings.py
 │   ├── urls.py
