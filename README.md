@@ -75,6 +75,7 @@ team-project
 ├── manage.py
 └── requirements.txt
 
+---
 
 ## チーム開発における注意点
 静的ファイル（CSS/JS）は static/ 内で管理
