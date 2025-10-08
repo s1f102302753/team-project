@@ -16,10 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),  # トップページをusersアプリに変更
-    path('notices/', include('notices.urls')), # noticesアプリのURLを追加
+
+    # トップページをログイン画面にリダイレクト
+    path('', RedirectView.as_view(pattern_name='users:login', permanent=False)),
+     # usersアプリ
+    path('users/', include('users.urls', namespace='users')),
+     # noticesアプ
+    path('notices/', include('notices.urls', namespace='notices')),
 ]
 

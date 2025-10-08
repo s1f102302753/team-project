@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import notice_list, notice_detail
+from .views import NoticeHomeView
+from . import views
+
+app_name = 'notices'
 
 urlpatterns = [
-    path('', notice_list, name='notice_list'),
-    path('<int:pk>/', notice_detail, name='notice_detail'),
+    path('', NoticeHomeView.as_view(), name='home'),  # / にアクセスすると homeに遷移
 ]
