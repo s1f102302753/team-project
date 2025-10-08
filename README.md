@@ -74,13 +74,12 @@ digital-circulation
 └── requirements.txt
 
 
-
 ## チーム開発における注意点
 静的ファイル（CSS/JS）は static/ 内で管理
 
 テンプレートは templates/ 内でアプリごとに分離
 
-新規パッケージを追加した場合は requirements.txt を更新
+1. 新規パッケージを追加した場合は requirements.txt を更新
 ```bash
 pip freeze > requirements.txt
 
