@@ -24,7 +24,8 @@
    cd team-project
 
 ## 仮想環境を作成・有効化
-python -m venv venv
+    ```bash
+   python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 
