@@ -43,35 +43,36 @@
 
 
 ## ディレクトリ構成
-digital-circulation
+ team-project
 ├── config
-│ ├── settings.py
-│ ├── urls.py
-│ └── wsgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
 ├── users
-│ ├── templates
-│ │ └── users
-│ │ ├── login.html
-│ │ ├── logout.html
-│ │ ├── register.html
-│ │ └── profile.html
-│ ├── views.py
-│ └── urls.py
+│   ├── templates
+│   │   └── users
+│   │       ├── login.html
+│   │       ├── logout.html
+│   │       ├── register.html
+│   │       └── profile.html
+│   ├── views.py
+│   └── urls.py
 ├── notices
-│ ├── templates
-│ │ └── notices
-│ │ ├── notice_list.html
-│ │ ├── notice_detail.html
-│ │ └── notice_form.html
-│ ├── views.py
-│ └── urls.py
+│   ├── templates
+│   │   └── notices
+│   │       ├── notice_list.html
+│   │       ├── notice_detail.html
+│   │       └── notice_form.html
+│   ├── views.py
+│   └── urls.py
 ├── templates
-│ └── base.html
+│   └── base.html
 ├── static
-│ ├── css
-│ └── js
+│   ├── css
+│   └── js
 ├── manage.py
 └── requirements.txt
+
 
 ## チーム開発における注意点
 静的ファイル（CSS/JS）は static/ 内で管理
