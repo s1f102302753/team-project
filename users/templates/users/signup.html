@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>サインアップ</title>
+</head>
+<body>
+
+{% block content %}
+  <h2>ユーザー登録</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">登録</button>
+  </form>
+  <p>すでにアカウントをお持ちですか？ <a href="{% url 'users:login' %}">ログイン</a></p>
+{% endblock %}
+
+</body>
+</html>
