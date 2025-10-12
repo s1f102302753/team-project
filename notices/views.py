@@ -7,4 +7,4 @@ from django.views.generic import TemplateView
 app_name = 'notices'
 
 class NoticeHomeView(TemplateView):
-    template_name = 'notices/home.html'
+    template_name = 'home.html'
