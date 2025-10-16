@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ request.user.municipality.name }}のお知らせ</h1>
+<ul>
+  {% for notice in notices %}
+    <li>
+      <h2>{{ notice.title }}</h2>
+      <p>{{ notice.content }}</p>
+      <p><small>{{ notice.published_at }}</small></p>
+    </li>
+  {% empty %}
+    <li>現在お知らせはありません。</li>
+  {% endfor %}
+</ul>
+{% endblock %}

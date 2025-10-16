@@ -7,6 +7,7 @@ class Municipality(models.Model):
     """自治体（市区町村など）の情報"""
     name = models.CharField(max_length=100)
     prefecture = models.CharField(max_length=50)
+    api_url = models.URLField(default='https://example.com/dummy')  # 自治体のAPIエンドポイントURL
 
     def __str__(self):
         return f"{self.prefecture} {self.name}"
