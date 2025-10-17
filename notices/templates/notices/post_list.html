@@ -1,0 +1,24 @@
+{% block content %}
+<div id="home-content" style="display:none;">
+    <h2>ホーム</h2>
+    <p>ここはホーム画面です。</p>
+</div>
+
+<div id="notices-content" style="display:none;">
+    <h2>お知らせ</h2>
+    <ul>
+        {% for notice in notices %}
+        <li>{{ notice.title }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div id="posts-content" style="display:none;">
+    <h2>掲示板</h2>
+    <ul>
+        {% for post in posts %}
+        <li>{{ post.title }} by {{ post.author.username }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
