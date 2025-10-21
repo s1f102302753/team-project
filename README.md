@@ -122,4 +122,12 @@ EOF
 
 ```
 
+## fitzのインストール
+```bash
+pip install PyMuPDF
 
+```
+確認方法
+```bash
+python -m fitz
+```
