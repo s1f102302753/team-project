@@ -86,5 +86,40 @@ team-project
 ```bash
 pip freeze > requirements.txt
 
+```
+
+
+## チャットボット機能実装におけるライブラリ
+```bash
+pip install django openai PyPDF2 faiss-cpu tiktoken
+
+```
+
+openai: ChatGPT API利用
+PyPDF2: PDFテキスト抽出
+faiss-cpu: ベクトル検索（PDFの内容検索）
+tiktoken: トークン分割（埋め込み用）
+※RAGのために必要最小限のライブラリ
+
+
+## OpenAI APIキー管理
+安全のため .env に保存し、Djangoで読み込みます。
+```bash
+pip install python-dotenv
+
+```
+
+```bash
+# プロジェクトルートで
+cat > .env <<'EOF'
+# .env.example を作成するときは値は空にする
+OPENAI_API_KEY=sk-xxxxREPLACE_WITH_YOUR_KEY
+# 他の環境変数
+POSTGRES_USER=team_user
+POSTGRES_PASSWORD=password123
+POSTGRES_DB=team_project_db
+EOF
+
+```
 
 
