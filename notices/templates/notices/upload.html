@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>PDFアップロード</title>
+</head>
+<body style="font-family:sans-serif;background:#f9f9f9;">
+  <div style="background:white;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:15px;margin-bottom:20px;">
+    <h1>AI チャットボット管理ページ</h1>
+    <a href="{% url 'notices:upload_pdf' %}">PDFアップロード</a>
+  </div>
+
+  <div style="max-width:600px;margin:auto;padding:20px;">
+    <h2>📤 PDFアップロード</h2>
+    <p>チャットボットに学習させたいPDFを選択してください。</p>
+
+    <form id="upload-form" method="POST" enctype="multipart/form-data" action="{% url 'notices:upload_pdf' %}">
+      {% csrf_token %}
+      <input type="file" name="pdf_file" accept="application/pdf" required>
+      <button type="submit">アップロード</button>
+    </form>
+
+    <div id="result" style="margin-top:20px;"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("upload-form");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      const res = await fetch("{% url 'notices:upload_pdf' %}", {
+        method: "POST",
+        body: formData,
+      });
+
+      const resultDiv = document.getElementById("result");
+      const data = await res.json();
+
+      if (res.ok) {
+        resultDiv.innerHTML = `<p style="color:green;">✅ ${data.message}</p>`;
+      } else {
+        resultDiv.innerHTML = `<p style="color:red;">❌ ${data.error}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
