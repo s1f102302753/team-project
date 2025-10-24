@@ -1,24 +1,20 @@
+{% extends 'notices/base.html' %}
+
+{% block title %}掲示板 - デジタル回覧板{% endblock %}
+
 {% block content %}
-<div id="home-content" style="display:none;">
-    <h2>ホーム</h2>
-    <p>ここはホーム画面です。</p>
-</div>
-
-<div id="notices-content" style="display:none;">
-    <h2>お知らせ</h2>
-    <ul>
-        {% for notice in notices %}
-        <li>{{ notice.title }}</li>
-        {% endfor %}
-    </ul>
-</div>
-
-<div id="posts-content" style="display:none;">
-    <h2>掲示板</h2>
-    <ul>
-        {% for post in posts %}
-        <li>{{ post.title }} by {{ post.author.username }}</li>
-        {% endfor %}
-    </ul>
-</div>
+<h2>掲示板投稿一覧</h2>
+<p><a href="{% url 'notices:post_create' %}">新規投稿</a></p>
+<ul>
+    {% for post in posts %}
+    <li>
+        <a href="{% url 'notices:post_detail' post.pk %}">{{ post.title }}</a>
+        <p>{{ post.content|truncatechars:100 }}</p>
+        <small>{{ post.created_at }} / {{ post.author.username }}</small>
+    </li>
+    {% empty %}
+    <li>投稿はありません。</li>
+    {% endfor %}
+</ul>
 {% endblock %}
+

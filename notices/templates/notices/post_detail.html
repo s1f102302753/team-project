@@ -1,0 +1,10 @@
+{% extends 'notices/base.html' %}
+
+{% block title %}{{ post.title }} - デジタル回覧板{% endblock %}
+
+{% block content %}
+<h2>{{ post.title }}</h2>
+<p>{{ post.content }}</p>
+<small>投稿者: {{ post.author.username }} / 投稿日: {{ post.created_at }}</small>
+<p><a href="{% url 'notices:post_list' %}">一覧に戻る</a></p>
+{% endblock %}
