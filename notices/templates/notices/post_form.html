@@ -1,0 +1,15 @@
+{% extends 'notices/base.html' %}
+
+{% block title %}新規投稿 - デジタル回覧板{% endblock %}
+
+{% block content %}
+<h2>新規投稿</h2>
+<form method="post">
+    {% csrf_token %}
+    <p>タイトル: <input type="text" name="title" required></p>
+    <p>内容: <textarea name="content" rows="5" required></textarea></p>
+    <button type="submit">投稿</button>
+</form>
+<p><a href="{% url 'notices:post_list' %}">一覧に戻る</a></p>
+{% endblock %}
+
