@@ -22,6 +22,7 @@ import faiss
 import openai
 from pdf2image import convert_from_path
 import pytesseract
+import google.generativeai as genai
 
 app_name = 'notices'
 
@@ -149,6 +150,8 @@ def load_pdfs_and_build_index():
     VECTORS.add(vectors)
     print("PDFベクトル化完了")
 
+genai.configure(api_key=settings.GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-1.5-pro")
 
 @csrf_exempt
 @require_POST
@@ -159,38 +162,27 @@ def chat_with_pdf(request):
     if not question:
         return JsonResponse({"error": "質問が送信されていません"}, status=400)
 
-    # デバッグ用出力
     if not VECTOR_TEXT_MAP or VECTORS is None:
         return JsonResponse({"error": "PDFがまだアップロードされていません / ベクトル未構築"}, status=400)
 
     try:
-        # 質問をベクトル化
+        # 質問をベクトル化し、類似ページ検索
         q_vec = VECTORIZER.transform([question]).toarray().astype("float32")
         D, I = VECTORS.search(q_vec, k=3)
         context = "\n".join([VECTOR_TEXT_MAP[i] for i in I[0]])
     except Exception as e:
         return JsonResponse({"error": f"ベクトル検索エラー: {e}"}, status=500)
 
-    prompt = f"以下の文脈を基に質問に答えてください。\n\n文脈:\n{context}\n\n質問: {question}\n\n回答:"
+    # Geminiへ渡すプロンプト
+    prompt = f"以下は参考文書の内容です:\n{context}\n\n質問: {question}\n文脈に基づいて日本語で簡潔に回答してください。"
 
     try:
-        from openai import OpenAI
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "あなたは優秀なアシスタントです。"},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=10000
-        )
-
-        answer = response.choices[0].message.content.strip()
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(prompt)
+        answer = response.text
     except Exception as e:
-        return JsonResponse({"error": f"OpenAI API エラー: {e}"}, status=500)
+        return JsonResponse({"error": f"Gemini API エラー: {e}"}, status=500)
 
     return JsonResponse({"answer": answer})
 
-# サーバー起動時に既存 PDF を読み込む
 load_pdfs_and_build_index()
