@@ -16,10 +16,20 @@ class NoticeHomeView(TemplateView):
 # お知らせ一覧の表示
 @login_required
 def notices_list(request):
-    """ユーザの自治体に紐づくニュース一覧"""
+    """ユーザの都道府県に紐づくリアルタイムお知らせ"""
     municipality = request.user.municipality
-    news_items = News.objects.filter(municipality=municipality)
-    return render(request, 'notices/notices_list.html', {'news_items': news_items})
+
+    # 都道府県情報を持っていない場合
+    if not municipality or not municipality.prefecture:
+        return render(request, 'notices/notices_list.html', {'notices': []})
+
+    prefecture = municipality.prefecture
+
+    # utils.py の関数を使用
+    notices = fetch_notices_for_prefecture(prefecture)
+
+    return render(request, 'notices/notices_list.html', {'notices': notices})
+
 
 
 @login_required
