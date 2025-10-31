@@ -1,0 +1,1 @@
+[{"model": "users.municipality", "pk": 1, "fields": {"name": "東京都庁", "prefecture": "東京都", "api_url": "https://catalog.data.metro.tokyo.lg.jp"}}, {"model": "users.municipality", "pk": 2, "fields": {"name": "沖縄県庁", "prefecture": "沖縄", "api_url": "https://data.bodik.jp"}}]
