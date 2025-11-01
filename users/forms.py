@@ -13,8 +13,8 @@ class CustomUserCreationForm(UserCreationForm):
     )
     municipality = forms.ModelChoiceField(
         queryset=Municipality.objects.all(),
-        required=False,
-        label='所属自治体（職員のみ）'
+        required=True,  # 住民も必須に変更
+        label='所属自治体'
     )
 
     class Meta:
@@ -29,21 +29,22 @@ class CustomUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 各フィールドのhelp_textを削除
         for field in self.fields.values():
             field.help_text = ''
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user_type = self.cleaned_data['user_type']
+
         if user_type == 'official':
             user.is_official = True
             user.is_resident = False
-            user.municipality = self.cleaned_data['municipality']
         else:
             user.is_official = False
             user.is_resident = True
-            user.municipality = None
+
+        # 全ユーザーに自治体を紐付ける
+        user.municipality = self.cleaned_data['municipality']
 
         if commit:
             user.save()

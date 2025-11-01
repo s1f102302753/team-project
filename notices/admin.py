@@ -4,6 +4,13 @@ from django.contrib import admin
 
 # notices/admin.py
 from django.contrib import admin
-from .models import Notice
+from .models import News
 
-admin.site.register(Notice)
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'municipality', 'published_at')
+    search_fields = ('title', 'content')
+    list_filter = ('municipality',)
+
+# 他のモデルも同様に登録可能
+

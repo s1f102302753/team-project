@@ -138,3 +138,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 PDF_DIR = MEDIA_ROOT / 'pdfs'
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass

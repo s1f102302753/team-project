@@ -1,0 +1,34 @@
+{% extends 'notices/base.html' %}
+{% load static %}
+
+{% block title %}新規投稿 - デジタル回覧板{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'notices/css/posts.css' %}">
+
+<div class="container">
+  <!-- 左側: カテゴリ -->
+  <div class="sidebar">
+    <h3>カテゴリ</h3>
+    <ul>
+      <li><a href="#">自治体からのお知らせ</a></li>
+      <li><a href="#">チャットボット</a></li>
+      <li><a href="#">防災情報</a></li>
+      <li><a href="#">地域イベント</a></li>
+    </ul>
+  </div>
+
+  <!-- 右側: 投稿フォーム -->
+  <div class="main-content">
+    <h2>新規投稿</h2>
+    <form method="post">
+      {% csrf_token %}
+      <p>タイトル: <input type="text" name="title" required></p>
+      <p>内容: <textarea name="content" rows="5" required></textarea></p>
+      <button type="submit">投稿</button>
+    </form>
+    <p><a href="{% url 'notices:post_list' %}">一覧に戻る</a></p>
+  </div>
+</div>
+{% endblock %}
+

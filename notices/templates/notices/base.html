@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'notices/posts.css' %}">
+
+    <meta charset="UTF-8">
+    <title>{% block title %}デジタル回覧板{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'notices/css/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>デジタル回覧板</h1>
+    </header>
+
+    <!-- タスクバー -->
+    <nav id="taskbar">
+        <a href="{% url 'notices:notices_list' %}" class="task-link">お知らせ</a>
+        <a href="{% url 'notices:post_list' %}" class="task-link">掲示板</a>
+    </nav>
+
+    <main id="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>

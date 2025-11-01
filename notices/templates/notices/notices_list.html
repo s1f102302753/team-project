@@ -1,16 +1,20 @@
-{% extends 'base.html' %}
+{% extends 'notices/base.html' %}
+
+{% block title %}お知らせ - デジタル回覧板{% endblock %}
 
 {% block content %}
-<h1>{{ request.user.municipality.name }}のお知らせ</h1>
-<ul>
-  {% for notice in notices %}
-    <li>
-      <h2>{{ notice.title }}</h2>
-      <p>{{ notice.content }}</p>
-      <p><small>{{ notice.published_at }}</small></p>
-    </li>
-  {% empty %}
-    <li>現在お知らせはありません。</li>
-  {% endfor %}
-</ul>
+<h2>{{ request.user.prefecture }}のお知らせ</h2>
+
+<div class="notice-container">
+    {% for notice in notices %}
+    <div class="notice-card">
+        <h3><a href="{{ notice.url }}" target="_blank">{{ notice.title }}</a></h3>
+        <p>{{ notice.content }}</p>
+        <small>{{ notice.created_at }}</small>
+    </div>
+    {% empty %}
+    <p>現在お知らせはありません。</p>
+    {% endfor %}
+</div>
+
 {% endblock %}
