@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>回覧板ホーム</title>
+</head>
+<body>
+    <h1>回覧板</h1>
+    <ul>
+        {% for notice in notices %}
+            <li>{{ notice }}</li>
+        {% empty %}
+            <li>お知らせはありません</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+    <h2>📚 PDFチャットボット</h2>
+    <input type="text" id="question" placeholder="質問を入力してください">
+    <button id="ask-btn">送信</button>
+
+    <div id="chat-result" style="margin-top:20px;"></div>
+
+    <script>
+        document.getElementById("ask-btn").addEventListener("click", async () => {
+            const question = document.getElementById("question").value;
+            if (!question) return alert("質問を入力してください");
+
+            const formData = new FormData();
+            formData.append("question", question);
+
+            const res = await fetch("{% url 'notices:chat_with_pdf' %}", {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await res.json();
+            const resultDiv = document.getElementById("chat-result");
+
+            if (res.ok) {
+                resultDiv.innerHTML = `<p style="color:green;">回答: ${data.answer}</p>`;
+            } else {
+                resultDiv.innerHTML = `<p style="color:red;">エラー: ${data.error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
+
