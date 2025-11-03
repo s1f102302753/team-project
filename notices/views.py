@@ -3,7 +3,7 @@ from django.conf import settings
 from django.views import View
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import TemplateView
-from .models import Notice, Post, UploadedPDF
+from .models import News, Post, UploadedPDF
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -74,7 +74,7 @@ VECTORIZER = None
 
 class NoticeHomeView(View):
     def get(self, request):
-        notices = Notice.objects.all()
+        notices = News.objects.all()
         return render(request, "notices/home.html", {"notices": notices})
     
 
