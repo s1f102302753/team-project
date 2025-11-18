@@ -2,6 +2,9 @@
 
 {% block title %}{{ post.title }} - デジタル回覧板{% endblock %}
 
+{% load static %}
+<link rel="stylesheet" href="{% static 'notices/css/posts.css' %}">
+
 {% block content %}
 <h2>{{ post.title }}</h2>
 <p>{{ post.content }}</p>
