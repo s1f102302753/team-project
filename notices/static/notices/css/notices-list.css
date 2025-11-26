@@ -1,0 +1,50 @@
+/* notices-list.html 専用 */
+.main-content .notice-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.main-content .notice-card {
+  background-color: #fdfdfd;
+  border-left: 4px solid #007bff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.main-content .notice-card h3 a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.main-content .notice-card h3 a:hover {
+  text-decoration: underline;
+}
+
+.main-content .notice-card p {
+  color: #333;
+}
+
+.main-content .notice-card small {
+  color: #666;
+}
+
+.main-content .notice-card:hover {
+  background-color: #f0f8ff;
+  transform: translateY(-2px);
+}
+
+/* スマホ対応 */
+@media (max-width: 600px) {
+  .main-content .notice-card {
+    padding: 12px 15px;
+    border-left-width: 3px;
+  }
+  .main-content .notice-container {
+    gap: 10px;
+  }
+}
+
+

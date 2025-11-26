@@ -1,23 +1,28 @@
 {% extends 'notices/base.html' %}
 
 {% load static %}
-<link rel="stylesheet" href="{% static 'notices/css/posts.css' %}">
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'notices/css/posts.css' %}">
+  <link rel="stylesheet" href="{% static 'notices/css/notices-list.css' %}">
+{% endblock %}
 
 {% block title %}お知らせ - デジタル回覧板{% endblock %}
 
 {% block content %}
-<h2>{{ request.user.prefecture }}のお知らせ</h2>
+<div class="main-content">  <!-- ← ここを追加 -->
+  <h2>{{ request.user.prefecture }}のお知らせ</h2>
 
-<div class="notice-container">
-    {% for notice in notices %}
-    <div class="notice-card">
-        <h3><a href="{{ notice.url }}" target="_blank">{{ notice.title }}</a></h3>
-        <p>{{ notice.content }}</p>
-        <small>{{ notice.created_at }}</small>
-    </div>
-    {% empty %}
-    <p>現在お知らせはありません。</p>
-    {% endfor %}
-</div>
-
+  <div class="notice-container">
+      {% for notice in notices %}
+      <div class="notice-card">
+          <h3><a href="{{ notice.url }}" target="_blank">{{ notice.title }}</a></h3>
+          <p>{{ notice.content }}</p>
+          <small>{{ notice.created_at }}</small>
+      </div>
+      {% empty %}
+      <p>現在お知らせはありません。</p>
+      {% endfor %}
+  </div>
+</div>  <!-- /.main-content -->
 {% endblock %}
