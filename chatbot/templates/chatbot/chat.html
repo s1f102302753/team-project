@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+</head>
+<body>
+
+<h2>PDF Upload</h2>
+
+<form id="upload-form" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" id="pdf-file" name="pdf">
+    <button type="submit">Upload</button>
+</form>
+
+<hr>
+
+<h2>Chat</h2>
+<form id="chat-form">
+    {% csrf_token %}
+    <input type="text" id="question" name="question" style="width:300px;">
+    <button type="submit">Send</button>
+</form>
+
+<div id="chatbox" style="white-space: pre-wrap; margin-top: 20px;"></div>
+
+<script src="/static/chatbot/chat.js"></script>
+
+</body>
+</html>
