@@ -1,0 +1,98 @@
+/* ===== 背景 ===== */
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background-color: #f3f4f6; /* 明るいグレー */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* 画面中央に配置 */
+}
+
+/* ===== コンテナ ===== */
+.signup-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 35px 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* ===== 見出し ===== */
+.signup-container h2 {
+  margin-bottom: 30px;
+  color: #007bff;
+  font-size: 1.8rem;
+}
+
+/* ===== フォーム ===== */
+.signup-form input[type="text"],
+.signup-form input[type="email"],
+.signup-form input[type="password"] {
+  width: 90%;
+  max-width: 350px;
+  padding: 12px 15px;
+  margin: 10px auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  display: block;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.signup-form input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* ===== ボタン ===== */
+.signup-button {
+  width: 95%;
+  max-width: 350px;
+  padding: 12px 0;
+  margin: 20px auto 0;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: block;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.signup-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* ===== ログインリンク ===== */
+.login-link {
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.login-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ===== スマホ対応 ===== */
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 25px 20px;
+  }
+
+  .signup-form input,
+  .signup-button {
+    width: 95%;
+  }
+}

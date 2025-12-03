@@ -1,19 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <title>サインアップ</title>
+  {% load static %}
+  <meta charset="UTF-8">
+  <title>ユーザー登録</title>
+  <link rel="stylesheet" href="{% static 'notices/css/signup.css' %}">
 </head>
 <body>
-
-{% block content %}
+<div class="signup-container">
   <h2>ユーザー登録</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">登録</button>
+  <form method="post" class="signup-form">
+  {% csrf_token %}
+
+  <p>
+    <label for="id_username">ユーザー名</label><br>
+    {{ form.username }}
+  </p>
+
+  <p>
+    <label for="id_email">メールアドレス</label><br>
+    {{ form.email }}
+  </p>
+
+  <p>
+    <label for="id_password1">パスワード</label><br>
+    {{ form.password1 }}
+  </p>
+
+  <p>
+    <label for="id_password2">パスワード再確認</label><br>
+    {{ form.password2 }}
+  </p>
+  <button type="submit" class="signup-button">登録</button>
   </form>
-  <p>すでにアカウントをお持ちですか？ <a href="{% url 'users:login' %}">ログイン</a></p>
-{% endblock %}
+
+  <p class="login-link">
+    すでにアカウントをお持ちですか？ 
+    <a href="{% url 'users:login' %}">ログイン</a>
+  </p>
+</div>
 
 </body>
 </html>
