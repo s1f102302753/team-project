@@ -59,6 +59,9 @@ class NoticeHomeView(TemplateView):
 # ------------------------
 # (notices_list は前回修正済みなのでOK)
 # ------------------------
+from django.views.decorators.cache import never_cache
+
+@never_cache
 @login_required
 def notices_list(request):
     """ユーザの都道府県に紐づくリアルタイムお知らせ"""

@@ -9,6 +9,9 @@ body {
 
 /* ===== ヘッダー ===== */
 header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 左にタイトル、右にログアウト */
   background-color: #007bff;
   color: #fff;
   padding: 15px 20px;
@@ -16,6 +19,23 @@ header {
   font-weight: bold;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+/* ログアウトボタン */
+.logout-button {
+  background-color: #fff;
+  color: #007bff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #e6f0ff;
+}
+
 
 /* ===== タスクバー ===== */
 #taskbar {

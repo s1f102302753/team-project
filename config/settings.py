@@ -139,5 +139,10 @@ try:
 except ImportError:
     pass
 
+<<<<<<< Updated upstream
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+=======
+# ログイン必須ページで未ログインの場合のリダイレクト先
+LOGIN_URL = '/users/login/'
+>>>>>>> Stashed changes
