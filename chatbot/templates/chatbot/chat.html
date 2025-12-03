@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>Chatbot</title>
-</head>
-<body>
+{% extends 'notices/base.html' %}
+{% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'chatbot/css/chat.css' %}">
+{% endblock %}
+
+{% block title %}Chatbot - デジタル回覧板{% endblock %}
+
+{% block content %}
 <h2>PDF Upload</h2>
-
 <form id="upload-form" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" id="pdf-file" name="pdf">
@@ -24,8 +25,8 @@
 </form>
 
 <div id="chatbox" style="white-space: pre-wrap; margin-top: 20px;"></div>
+{% endblock %}
 
-<script src="/static/chatbot/chat.js"></script>
-
-</body>
-</html>
+{% block extra_js %}
+<script src="{% static 'chatbot/chat.js' %}"></script>
+{% endblock %}
