@@ -15,6 +15,9 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import os
+
+GEMINI_API_KEY = "AIzaSyA1VHd-_u37aOvBvvEfrHJQyAilLPrRPMY"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -40,6 +43,7 @@ INSTALLED_APPS = [
 
     'notices', #デジタル回覧板アプリ
     'users', # ユーザー管理アプリ
+    'chatbot', #チャットボットアプリ
 ]
 
 MIDDLEWARE = [
@@ -134,3 +138,6 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

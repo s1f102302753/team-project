@@ -27,5 +27,7 @@ urlpatterns = [
     path('users/', include('users.urls', namespace='users')),
      # noticesアプ
     path('notices/', include('notices.urls', namespace='notices')),
+     #chatbotアプリ
+    path('chatbot/', include('chatbot.urls', namespace='chatbot')),
 ]
 
