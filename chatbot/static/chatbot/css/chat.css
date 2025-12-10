@@ -1,86 +1,52 @@
 /* ==============================
-   Chatbot ページ用 CSS
+   Chatbot ページ固有の CSS
    ============================== */
-
-/* ===== ページ全体 ===== */
-body {
-    font-family: 'Noto Sans JP', sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e0ebff 100%);
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
 
 /* ===== 中央コンテナ ===== */
 #chat-container {
-    background-color: #fff;
-    border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border-radius: 12px;
     max-width: 700px;
     margin: 30px auto;
-    border-top: 5px solid #007bff;
+    background-color: #fff; /* baseに合わせる場合は消してもOK */
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
 /* ===== PDFアップロードフォーム & チャットフォーム ===== */
-/* チャットページ内のフォームだけ */
-#chat-container form {
-    background-color: #fff;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+#upload-form, #chat-form {
     margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-
 /* ファイル入力とテキスト入力のスタイル */
-input[type="file"],
-input[type="text"] {
+#upload-form input[type="file"],
+#chat-form input[type="text"] {
     padding: 8px 10px;
     border-radius: 6px;
     border: 1px solid #ccc;
     margin-right: 10px;
-    font-size: 1rem;
 }
-
-/* ===== チャットページ専用ボタン ===== */
-#chat-container button {
-    background: linear-gradient(90deg, #007bff, #00bfff);
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    font-size: 1rem;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.1s;
-}
-
-#chat-container button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
 
 /* ===== チャットメッセージ ===== */
 .chat-message.user {
-    background-color: #007bff;
+    background-color: #007bff; /* ユーザーは青 */
     color: #fff;
-    display: inline-block;
-    padding: 10px 15px;
     border-radius: 15px 15px 0 15px;
-    text-align: right;
     margin-left: 30%;
     margin-bottom: 10px;
+    padding: 10px 15px;
 }
 
 .chat-message.bot {
-    background-color: #f1f3f6;
-    display: inline-block;
-    padding: 10px 15px;
+    background-color: #e9eff7; /* ボットは薄青 */
+    color: #333;
     border-radius: 15px 15px 15px 0;
-    text-align: left;
     margin-right: 30%;
     margin-bottom: 10px;
+    padding: 10px 15px;
 }
 
 /* ===== チャットメッセージのスクロール領域 ===== */
@@ -92,27 +58,4 @@ input[type="text"] {
     border-radius: 10px;
     background-color: #fafafa;
     margin-bottom: 15px;
-}
-
-/* ===== レスポンシブ ===== */
-@media (max-width: 768px) {
-    #chat-container {
-        padding: 15px;
-        margin: 15px;
-    }
-
-    .chat-message.user,
-    .chat-message.bot {
-        margin-left: 5%;
-        margin-right: 5%;
-    }
-
-    input[type="text"] {
-        width: 60%;
-        margin-bottom: 10px;
-    }
-
-    button {
-        width: auto;
-    }
 }
