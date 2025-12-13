@@ -16,7 +16,7 @@
   <div class="notice-container">
       {% for notice in notices %}
       <div class="notice-card">
-          <h3><a href="{{ notice.url }}" target="_blank">{{ notice.title }}</a></h3>
+          <h3><a href="{% url 'notices:notice_detail' %}?url={{ notice.url|urlencode }}">{{ notice.title }}</a></h3>
           <p>{{ notice.content }}</p>
           <small>{{ notice.created_at }}</small>
       </div>

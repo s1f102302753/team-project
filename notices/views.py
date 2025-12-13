@@ -8,6 +8,8 @@ from .models import News, Post, Municipality
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
+from .utils import fetch_amami_detail
+
 app_name = 'notices'
 
 # ------------------------
@@ -172,3 +174,24 @@ def api_posts(request):
         for p in posts
     ]
     return JsonResponse(data, safe=False)
+
+@login_required
+def notice_detail(request):
+    """
+    外部サイトのお知らせ詳細をアプリ内で表示するビュー
+    URLパラメータ 'url' で対象を指定する
+    """
+    target_url = request.GET.get('url')
+    
+    if not target_url:
+        return redirect('notices:notices_list')
+    
+    # スクレイピング実行
+    article_data = fetch_amami_detail(target_url)
+    
+    if not article_data:
+        # 取得失敗や不正なURLの場合は元サイトへリダイレクト等の処理
+        return redirect(target_url)
+
+    return render(request, 'notices/notice_detail.html', {'article': article_data})
+
