@@ -1,143 +1,119 @@
-import numpy as np
-import PyPDF2
-from google import genai
-from django.conf import settings
 import os
-from chromadb import Client as ChromaClient
+import pdfplumber
+from pdf2image import convert_from_path
+import pytesseract
+
 from chromadb import PersistentClient
-from chromadb.config import Settings
+from chromadb.utils import embedding_functions
 
-# =========================
-# Gemini クライアント初期化
-# =========================
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+import google.generativeai as genai
 
-EMBED_MODEL = "models/text-embedding-004"
-LLM_MODEL = "models/gemini-2.5-flash"
 
-# =========================
-# Chroma クライアント
-# =========================
-# ChromaDB の保存先フォルダ
-CHROMA_PATH = "vector_db"
+# -----------------------------
+# ChromaDB 初期化
+# -----------------------------
+CHROMA_PATH = "chromadb_store"
 
-# 新方式の Chroma Client
 chroma_client = PersistentClient(path=CHROMA_PATH)
 
-# コレクション取得（なければ作成）
 collection = chroma_client.get_or_create_collection(
-    name="pdf_index",
+    name="pdf_collection",
     metadata={"hnsw:space": "cosine"}
 )
 
-# コレクション（存在しない場合は作る）
-try:
-    collection = chroma_client.get_collection("pdf_index")
-except:
-    collection = chroma_client.create_collection("pdf_index")
+embedding_model = embedding_functions.DefaultEmbeddingFunction()
 
 
-# =========================
-# テキストを Embed
-# =========================
-def embed_text(text: str):
-    response = client.models.embed_text(
-        model=EMBED_MODEL,
-        text=text
-    )
-    return response.embeddings[0].values
+# -----------------------------
+# Gemini
+# -----------------------------
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 
-# =========================
-# PDF を読み込み → チャンク → ChromaDB へ保存
-# =========================
+# -----------------------------
+# PDF → テキスト抽出（OCR対応）
+# -----------------------------
+def extract_text_with_ocr(pdf_path):
+    pages_text = []
+
+    print(f"[INFO] Extracting text from PDF: {pdf_path}")
+
+    with pdfplumber.open(pdf_path) as pdf:
+        for i, page in enumerate(pdf.pages):
+            text = page.extract_text()
+
+            # 通常テキストが取れたらそのまま使う
+            if text and text.strip():
+                pages_text.append(text.strip())
+                continue
+
+            # ------------ OCR 実行 -------------
+            print(f"[INFO] Page {i} has no text. Running OCR...")
+
+            # PDF → 画像
+            images = convert_from_path(pdf_path, first_page=i+1, last_page=i+1)
+
+            ocr_text = ""
+            for img in images:
+                ocr_text += pytesseract.image_to_string(img, lang="jpn+eng")
+
+            pages_text.append(ocr_text.strip())
+
+    return pages_text
+
+
+# -----------------------------
+# PDF → ChromaDB へ登録
+# -----------------------------
 def process_pdf_and_update_index(pdf_path):
-    reader = PyPDF2.PdfReader(pdf_path)
-    text = ""
 
-    for i, page in enumerate(reader.pages):
-        extracted = page.extract_text()
-        if extracted:
-            text += extracted + "\n"
+    pages = extract_text_with_ocr(pdf_path)
+    print(f"[DEBUG] Extracted {len(pages)} pages.")
 
-    # チャンク分割
-    chunks = []
-    step = 400
-    for i in range(0, len(text), step):
-        chunk = text[i:i+step].strip()
-        if chunk:
-            chunks.append(chunk)
+    # 完全に空の場合
+    pages = [p for p in pages if p.strip()]
+    if len(pages) == 0:
+        raise ValueError("PDF の全ページでテキストが抽出できませんでした。")
 
-    # ChromaDB に登録
-    for idx, chunk in enumerate(chunks):
-        emb = embed_text(chunk)
-        collection.upsert(
-            ids=[f"{os.path.basename(pdf_path)}_{idx}"],
-            documents=[chunk],
-            embeddings=[emb],
-            metadatas=[{
-                "file": os.path.basename(pdf_path),
-                "chunk": idx
-            }]
-        )
+    # 埋め込み生成
+    embeddings = embedding_model(pages)
 
-    chroma_client.persist()
+    ids = [f"doc_{i}" for i in range(len(pages))]
+    metadatas = [{"page": i} for i in range(len(pages))]
+
+    collection.add(
+        ids=ids,
+        documents=pages,
+        embeddings=embeddings,
+        metadatas=metadatas
+    )
+
+    print("[INFO] ChromaDB updated with new PDF data.")
 
 
-# =========================
-# ChromaDB 類似検索
-# =========================
-def search_vector_db(query_text, top_k=3):
+# -----------------------------
+# 質問 → Gemini
+# -----------------------------
+def ask_gemini(query):
+
     results = collection.query(
-        query_texts=[query_text],
-        n_results=top_k
+        query_texts=[query],
+        n_results=3
     )
-    return results
 
+    retrieved = results["documents"][0]
+    context = "\n---\n".join(retrieved)
 
-# =========================
-# RAG + Gemini
-# =========================
-def ask_gemini(question):
+    prompt = f"""
+以下は PDF から抽出された関連情報です：
 
-    # ① ChromaDB 検索
-    results = search_vector_db(question, top_k=3)
-
-    context_blocks = []
-    for txt, meta in zip(results["documents"][0], results["metadatas"][0]):
-        block = f"[file={meta['file']}, chunk={meta['chunk']}]\n{txt}"
-        context_blocks.append(block)
-
-    context = "\n\n".join(context_blocks)
-
-    # ② プロンプト構築
-    system_prompt = """
-あなたはPDF文書に基づいて正確に回答するアシスタントです。
-- 回答は必ずPDFの内容（以下のコンテキスト）から得られる情報のみで行ってください。
-- 推測で答えないこと。
-- 情報が無ければ「PDFに情報がありません」と答えること。
-"""
-
-    user_prompt = f"""
-====== PDFコンテキスト ======
 {context}
-===========================
 
-質問：
-{question}
+質問：{query}
+
+この情報を踏まえて、分かりやすく回答してください。
 """
 
-    # ③ Gemini 呼び出し
-    response = client.models.generate_content(
-        model=LLM_MODEL,
-        contents=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        generation_config={
-            "temperature": 0.0,
-            "max_output_tokens": 800
-        }
-    )
-
+    response = model.generate_content(prompt)
     return response.text
