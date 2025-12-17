@@ -11,7 +11,7 @@
   <!-- 左側: カテゴリ -->
   <div class="sidebar">
     <h3>カテゴリ</h3>
-    <ul>
+    <ul id="post-list">
       <li><a href="#">自治体からのお知らせ</a></li>
       <li><a href="#">チャットボット</a></li>
       <li><a href="#">防災情報</a></li>
@@ -23,7 +23,7 @@
   <div class="main-content">
     <h2>掲示板投稿一覧</h2>
     <p><a href="{% url 'notices:post_create' %}">新規投稿</a></p>
-    <ul>
+    <ul id="post-list">
       {% for post in posts %}
       <li>
         <a href="{% url 'notices:post_detail' post.pk %}">{{ post.title }}</a>
@@ -36,6 +36,37 @@
     </ul>
   </div>
 </div>
+<script>
+const socket = new WebSocket(
+    "ws://" + window.location.host + "/ws/notices/"
+);
+
+socket.onopen = () => {
+    console.log("WebSocket connected");
+};
+
+socket.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    console.log("新規投稿受信", data);
+
+    const postList = document.getElementById("post-list");
+
+    // 新しい li を作成
+    const li = document.createElement("li");
+    li.innerHTML = `
+        <a href="/notices/posts/${data.id}/">${data.title}</a>
+        <p>${data.content.substring(0, 100)}</p>
+        <small>just now / ${data.author}</small>
+    `;
+
+    // 一番上に追加（最新投稿を上に）
+    postList.prepend(li);
+};
+
+socket.onerror = (e) => {
+    console.error("WebSocket error", e);
+};
+</script>
 {% endblock %}
 
 

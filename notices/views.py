@@ -7,6 +7,8 @@ from .utils import fetch_notices_for_prefecture
 from .models import News, Post, Municipality 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 app_name = 'notices'
 
@@ -111,11 +113,22 @@ def post_create(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
-        Post.objects.create(
+        post = Post.objects.create(
             author=request.user,
             municipality=target_municipality,
             title=title,
             content=content
+        )
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "notices",
+            {
+                "type": "notice_message",
+                "id": post.id,
+                "title": post.title,
+                "content": post.content,
+                "author": post.author.username,
+            }
         )
         return redirect('notices:post_list')
     

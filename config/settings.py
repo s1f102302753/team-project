@@ -34,6 +34,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'channels',
     'notices', #デジタル回覧板アプリ
     'users', # ユーザー管理アプリ
     'chatbot', #チャットボットアプリ
@@ -74,6 +77,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+ASGI_APPLICATION = 'config.asgi.application'
 
 
 # Database
@@ -143,3 +148,9 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 # ログイン必須ページで未ログインの場合のリダイレクト先
 LOGIN_URL = '/users/login/'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
