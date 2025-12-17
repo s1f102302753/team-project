@@ -6,18 +6,26 @@
     <title>ログイン</title>
     <link rel="stylesheet" href="{% static 'notices/css/login.css' %}">
 </head>
+
 <body>
-    <h1>ログイン</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">ログイン</button>
-    </form>
+    <!-- ★ 追加 -->
+    <div class="login-page">
+        <div class="login-container">
 
-    <p>
-        アカウントをお持ちでない方は
-        <a class="btn btn-link" href="{% url 'users:signup' %}">新規登録</a>
-    </p>
+            <h1>ログイン</h1>
 
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">ログイン</button>
+            </form>
+
+            <p>
+                アカウントをお持ちでない方は
+                <a class="btn btn-link" href="{% url 'users:signup' %}">新規登録</a>
+            </p>
+
+        </div>
+    </div>
 </body>
 </html>

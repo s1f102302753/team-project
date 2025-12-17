@@ -1,95 +1,92 @@
-/* プロジェクトのテーマカラー */
+/* ===== テーマカラー ===== */
 :root {
-    --green-primary: #4CAF50; /* きれいな緑 */
-    --green-dark: #388E3C;   /* 濃い緑 */
+    --green-primary: #4CAF50;
+    --green-dark: #388E3C;
     --gray-border: #ccc;
-    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
+    --shadow-light: 0 4px 10px rgba(0,0,0,0.1);
 }
-/* 全体のリセットと中央配置のコンテナとして body を使用 */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center; /* 水平中央寄せ */
-    align-items: center; /* 垂直中央寄せ */
+
+/* ===== ページ全体（ログイン専用） ===== */
+.login-page {
     min-height: 100vh;
-    margin: 0;
-    background-color: #F0F0F0; /* 薄いグレーの背景 */
-    /* ログインコンテナのスタイル */
-    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+/* ===== ログイン枠 ===== */
+.login-container {
+    background-color: #fff;
     padding: 40px;
     border-radius: 12px;
     box-shadow: var(--shadow-light);
     width: 100%;
-    max-width: 400px; /* フォームの最大幅を設定 */
+    max-width: 400px;
+    box-sizing: border-box;
     text-align: center;
 }
-/* タイトル */
-h1 {
+
+/* ===== タイトル ===== */
+.login-container h1 {
     font-size: 32px;
-    color: #333;
     margin-bottom: 30px;
-    font-weight: 700;
+    color: #333;
 }
-/* Djangoフォームの出力 (form.as_p) に対応 */
-form p {
+
+/* ===== フォーム ===== */
+.login-container form p {
     text-align: left;
     margin-bottom: 20px;
 }
-form label {
+
+.login-container label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     font-weight: 600;
-    color: #333;
 }
-/* 入力フィールド (input) */
-form input[type="text"],
-form input[type="password"],
-form input[type="email"] {
+
+/* 入力欄 */
+.login-container input[type="text"],
+.login-container input[type="password"],
+.login-container input[type="email"] {
     width: 100%;
     padding: 12px;
     border: 1px solid var(--gray-border);
     border-radius: 6px;
     box-sizing: border-box;
-    transition: border-color 0.3s, box-shadow 0.3s;
 }
-form input:focus {
+
+.login-container input:focus {
     border-color: var(--green-primary);
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3); /* 緑色のフォーカスリング */
     outline: none;
+    box-shadow: 0 0 0 3px rgba(76,175,80,0.3);
 }
+
 /* ログインボタン */
-form button[type="submit"] {
+.login-container button[type="submit"] {
     width: 100%;
     padding: 12px;
     background-color: var(--green-primary);
-    color: white;
+    color: #fff;
     border: none;
     border-radius: 6px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.3s;
 }
-form button[type="submit"]:hover {
+
+.login-container button:hover {
     background-color: var(--green-dark);
 }
+
 /* 新規登録リンク */
-p a {
+.login-container a {
     color: var(--green-primary);
-    text-decoration: none;
     font-weight: bold;
-    transition: color 0.3s;
+    text-decoration: none;
 }
-p a:hover {
-    color: var(--green-dark);
+
+.login-container a:hover {
     text-decoration: underline;
-}
-/* Djangoが追加している可能性のある 'btn btn-link' クラスへの対応 */
-.btn-link {
-    /* リンクとして機能させるため、デフォルトのボタン装飾をリセット */
-    background: none;
-    border: none;
-    padding: 0;
-    /* 上の p a スタイルが適用されるようにする */
 }
