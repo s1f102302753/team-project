@@ -2,30 +2,183 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot - 自治体サポート</title>
+    <style>
+        body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        h1 { text-align: center; color: #333; }
+        
+        /* 職員用アップロードエリアのスタイル */
+        .upload-section { 
+            background-color: #e3f2fd; /* 薄い青色 */
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 30px; 
+            border: 2px dashed #2196f3;
+        }
+        
+        /* チャットエリアのスタイル */
+        .chat-section { 
+            background-color: #fff; 
+            border: 1px solid #ddd; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        #chatbox { 
+            background: #f9f9f9; 
+            padding: 15px; 
+            border: 1px solid #eee; 
+            min-height: 200px; 
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 15px; 
+            white-space: pre-wrap; 
+            border-radius: 4px;
+        }
+
+        input[type="text"] { width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; cursor: pointer; background-color: #2196f3; color: white; border: none; border-radius: 4px; font-weight: bold; }
+        button:hover { background-color: #1976d2; }
+        
+        .user-msg { color: #007bff; font-weight: bold; display: block; margin-top: 10px; }
+        .bot-msg { color: #333; display: block; margin-top: 5px; }
+        .loading { color: #666; font-style: italic; }
+        .error { color: #d32f2f; font-weight: bold; }
+    </style>
 </head>
 <body>
 
-<h2>PDF Upload</h2>
+<h1>自治体AIチャットボット</h1>
 
-<form id="upload-form" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" id="pdf-file" name="pdf">
-    <button type="submit">Upload</button>
-</form>
+{% if user.is_authenticated and user.is_official %}
+    <div class="upload-section">
+        <h3>📂 資料アップロード（職員専用機能）</h3>
+        <p style="margin-top:0;"><small>※PDFファイルをアップロードすると、AIがその内容を学習し、住民からの質問に答えられるようになります。</small></p>
+        
+        <form id="upload-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="pdf-file" name="pdf" accept=".pdf" required>
+            <button type="submit">学習させる</button>
+        </form>
+        <div id="upload-status" style="margin-top: 10px; font-weight: bold;"></div>
+    </div>
+{% endif %}
 
-<hr>
+<div class="chat-section">
+    <h3>💬 質問コーナー</h3>
+    <form id="chat-form">
+        <input type="text" id="question" name="question" placeholder="例: ごみの出し方について教えてください" required>
+        <button type="submit">送信</button>
+    </form>
 
-<h2>Chat</h2>
-<form id="chat-form">
-    {% csrf_token %}
-    <input type="text" id="question" name="question" style="width:300px;">
-    <button type="submit">Send</button>
-</form>
+    <div id="chatbox">ここにAIとの会話が表示されます...</div>
+</div>
 
-<pre id="chatbox" style="white-space: pre-wrap; margin-top: 20px;"></pre>
+<script>
+    // CSRFトークンを取得する関数
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
 
-<script src="/static/chatbot/chat.js"></script>
+    // --- アップロード処理 ---
+    // 住民ユーザーの場合、upload-form要素自体が存在しないため、if文でチェックしてからイベントを設定します
+    const uploadForm = document.getElementById('upload-form');
+    
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const statusDiv = document.getElementById('upload-status');
+            
+            statusDiv.style.color = "#333";
+            statusDiv.innerText = "⏳ アップロード＆学習中...これには数秒〜数分かかります...";
+            
+            // ボタンを無効化（連打防止）
+            const btn = this.querySelector('button');
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/chatbot/upload/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken },
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = "✅ 学習完了: " + data.filename;
+                    this.reset();
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = "❌ エラー: " + (data.error || "不明なエラー");
+                }
+            } catch (error) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "❌ 通信エラーが発生しました";
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    }
+
+    // --- チャット送信処理 ---
+    const chatForm = document.getElementById('chat-form');
+    if (chatForm) {
+        chatForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const questionInput = document.getElementById('question');
+            const question = questionInput.value;
+            const chatbox = document.getElementById('chatbox');
+            const submitBtn = this.querySelector('button');
+
+            // ユーザーの入力を表示
+            chatbox.innerHTML = `<span class="user-msg">🧑 あなた: ${question}</span>\n<span class="loading">🤖 AIが考え中...</span>`;
+            questionInput.value = ""; // 入力欄をクリア
+            submitBtn.disabled = true; // 連打防止
+
+            try {
+                const response = await fetch('/chatbot/api/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // AIの回答を表示（Markdownなどが含まれる場合はmarked.js等が必要ですが、ここではテキストとして表示）
+                    chatbox.innerHTML = `<span class="user-msg">🧑 あなた: ${question}</span>\n\n<span class="bot-msg">🤖 AI: \n${data.answer}</span>`;
+                } else {
+                    chatbox.innerHTML = `<span class="user-msg">🧑 あなた: ${question}</span>\n\n<span class="error">❌ エラー: ${data.error}</span>`;
+                }
+            } catch (error) {
+                chatbox.innerHTML = `<span class="user-msg">🧑 あなた: ${question}</span>\n\n<span class="error">❌ 通信エラーが発生しました。</span>`;
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }
+</script>
 
 </body>
 </html>
