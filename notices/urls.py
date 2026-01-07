@@ -1,12 +1,11 @@
 from django.urls import path
-from .views import NoticeHomeView
 from . import views
 
 app_name = 'notices'
 
 urlpatterns = [
-    path('', NoticeHomeView.as_view(), name='home'),  # / にアクセスすると homeに遷移
-    path('list/', views.notices_list, name='notices_list'),
+    # ここを修正：name を 'notices_list' に設定する（これがホームになる）
+    path('', views.notices_list, name='notices_list'),
     path('posts/', views.post_list, name='post_list'),
     path('posts/new/', views.post_create, name='post_create'),
     path('posts/<int:pk>/', views.post_detail, name='post_detail'),

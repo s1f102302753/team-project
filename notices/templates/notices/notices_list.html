@@ -1,29 +1,75 @@
 <!DOCTYPE html>
 {% extends 'notices/base.html' %}
 
-{% load static %}
-
-{% block extra_css %}
-  <link rel="stylesheet" href="{% static 'notices/css/base.css' %}">
-  <link rel="stylesheet" href="{% static 'notices/css/notices-list.css' %}">
-{% endblock %}
-
-{% block title %}お知らせ - デジタル回覧板{% endblock %}
-
 {% block content %}
-<div class="main-content">  <!-- ← ここを追加 -->
-  <h2>{{ request.user.prefecture }}のお知らせ</h2>
+<div class="main-content">
+  <h2 class="page-title">{{ prefecture }} 防災・生活情報</h2>
+
+  {% if weather %}
+  <div class="weather-widget">
+      <div class="weather-info">
+          <span class="weather-status">{{ weather.status }}</span>
+          <span class="weather-temp">
+              <span class="max">{{ weather.max_temp }}°C</span> / 
+              <span class="min">{{ weather.min_temp }}°C</span>
+          </span>
+      </div>
+      <p class="weather-desc">奄美市（名瀬）付近の予報</p>
+  </div>
+  {% endif %}
 
   <div class="notice-container">
-      {% for notice in notices %}
-      <div class="notice-card">
-          <h3><a href="{{ notice.url }}" target="_blank">{{ notice.title }}</a></h3>
+      <h3 class="section-subtitle">🚨 緊急避難場所一覧</h3>
+      
+      {% for notice in evacuation_notices %}
+      <div class="notice-card emergency-card">
+          <div class="card-header">
+              <span class="badge">避難所</span>
+              <a href="{{ notice.url }}" target="_blank" class="map-link">地図を表示</a>
+          </div>
+          <h4>{{ notice.title }}</h4>
           <p>{{ notice.content }}</p>
-          <small>{{ notice.created_at }}</small>
       </div>
       {% empty %}
-      <p>現在お知らせはありません。</p>
+      <p>現在、表示できる避難所情報がありません。</p>
       {% endfor %}
   </div>
-</div>  <!-- /.main-content -->
+</div>
+
+<style>
+  /* 天気ウィジェットのデザイン */
+  .weather-widget {
+      background: #f0f7ff;
+      border-left: 5px solid #007bff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+  }
+  .weather-status { font-size: 1.4rem; font-weight: bold; margin-right: 15px; }
+  .max { color: #e74c3c; }
+  .min { color: #3498db; }
+  .weather-desc { font-size: 0.8rem; color: #666; margin-top: 5px; }
+
+  /* 避難所カードのデザイン */
+  .emergency-card {
+      border: 1px solid #ffcccc;
+      background-color: #fffafa;
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 8px;
+  }
+  .badge {
+      background: #e74c3c;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+  }
+  .map-link {
+      float: right;
+      font-size: 0.8rem;
+      color: #007bff;
+      text-decoration: none;
+  }
+</style>
 {% endblock %}

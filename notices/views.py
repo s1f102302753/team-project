@@ -2,6 +2,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import TemplateView
 
+from django.views.decorators.cache import never_cache
+from notices.utils import fetch_amami_evacuation, fetch_amami_weather
 from .utils import fetch_notices_for_prefecture
 # この 'Municipality' は notices.models.Municipality を指します
 from .models import News, Post, Municipality 
@@ -50,64 +52,58 @@ def _get_municipality_instance(request_user):
         return target_municipality
         # ▲▲▲ 修正箇所 ▲▲▲
 
-# ------------------------
-# ホーム画面の表示
-# ------------------------
-class NoticeHomeView(TemplateView):
-    template_name = 'notices/base.html'
-
-# ------------------------
-# (notices_list は前回修正済みなのでOK)
-# ------------------------
-from django.views.decorators.cache import never_cache
-
+# ---------------------------------------------------------
+# ▼▼▼ メインビュー (ホーム画面 / お知らせ一覧) ▼▼▼
+# ---------------------------------------------------------
 @never_cache
 @login_required
 def notices_list(request):
-    """ユーザの都道府県に紐づくリアルタイムお知らせ"""
+    """
+    防災情報（避難所）と天気予報を統合したお知らせ画面
+    urls.py で path('', views.notices_list, name='home') とすることでホームになる
+    """
     
+    # ユーザー情報から表示用の都道府県名を取得
     user_municipality_data = request.user.municipality
-    prefecture = None
-
+    display_prefecture = "奄美市"
+    
     if hasattr(user_municipality_data, 'prefecture'):
-        prefecture = user_municipality_data.prefecture
-    
+        display_prefecture = user_municipality_data.prefecture
     elif isinstance(user_municipality_data, str):
-        if ' ' in user_municipality_data:
-            prefecture = user_municipality_data.split(' ', 1)[0].strip()
-        else:
-            prefecture = user_municipality_data.strip()
+        display_prefecture = user_municipality_data.split(' ', 1)[0].strip()
+
+    # --- データの取得 ---
+    # 🚨 奄美市の避難所情報をBODIKから取得
+    evacuation_info = fetch_amami_evacuation() 
     
-    if not prefecture:
-        return render(request, 'notices/notices_list.html', {'notices': []})
+    # ☀️ 奄美市の天気情報をOpen-Meteoから取得
+    weather_info = fetch_amami_weather() 
+    
+    context = {
+        'prefecture': display_prefecture,
+        'evacuation_notices': evacuation_info,
+        'weather': weather_info,
+    }
+    
+    return render(request, 'notices/notices_list.html', context)
 
-    notices = fetch_notices_for_prefecture(prefecture)
-    return render(request, 'notices/notices_list.html', {'notices': notices})
-
-# ------------------------
-# (post_list はヘルパー関数を呼ぶだけなので、変更不要)
-# ------------------------
+# ---------------------------------------------------------
+# ▼▼▼ 掲示板ビュー (Post関連) ▼▼▼
+# ---------------------------------------------------------
 @login_required
 def post_list(request):
-    """掲示板投稿一覧（ユーザの自治体ごと）"""
-    # 修正されたヘルパー関数を呼ぶ
+    """掲示板投稿一覧"""
     target_municipality = _get_municipality_instance(request.user)
-    
     if target_municipality:
-        posts = Post.objects.filter(municipality=target_municipality)
+        posts = Post.objects.filter(municipality=target_municipality).order_by('-created_at')
     else:
         posts = Post.objects.none() 
     return render(request, 'notices/post_list.html', {'posts': posts})
 
-# ------------------------
-# (post_create もヘルパー関数を呼ぶだけなので、変更不要)
-# ------------------------
 @login_required
 def post_create(request):
     """掲示板投稿作成"""
-    # 修正されたヘルパー関数を呼ぶ
     target_municipality = _get_municipality_instance(request.user)
-
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
@@ -121,12 +117,8 @@ def post_create(request):
     
     if not target_municipality:
         return redirect('notices:post_list')
-
     return render(request, 'notices/post_form.html')
 
-# ------------------------
-# (post_detail もヘルパー関数を呼ぶだけなので、変更不要)
-# ------------------------
 @login_required
 def post_detail(request, pk):
     """掲示板投稿詳細"""
@@ -134,12 +126,12 @@ def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk, municipality=target_municipality)
     return render(request, 'notices/post_detail.html', {'post': post})
 
-# ------------------------
-# (api_notices もヘルパー関数を呼ぶだけなので、変更不要)
-# ------------------------
+# ---------------------------------------------------------
+# ▼▼▼ APIビュー ▼▼▼
+# ---------------------------------------------------------
 @login_required
 def api_notices(request):
-    """API: ユーザの自治体ニュースをJSONで返す"""
+    """お知らせデータをJSONで返すAPI"""
     municipality = _get_municipality_instance(request.user)
     news_items = News.objects.filter(municipality=municipality)
     data = [
@@ -148,17 +140,13 @@ def api_notices(request):
             'title': n.title,
             'content': n.content,
             'published_at': n.published_at.isoformat()
-        }
-        for n in news_items
+        } for n in news_items
     ]
     return JsonResponse(data, safe=False)
 
-# ------------------------
-# (api_posts もヘルパー関数を呼ぶだけなので、変更不要)
-# ------------------------
 @login_required
 def api_posts(request):
-    """API: ユーザの自治体掲示板投稿をJSONで返す"""
+    """掲示板データをJSONで返すAPI"""
     municipality = _get_municipality_instance(request.user)
     posts = Post.objects.filter(municipality=municipality)
     data = [
@@ -168,7 +156,10 @@ def api_posts(request):
             'content': p.content,
             'author': p.author.username,
             'created_at': p.created_at.isoformat()
-        }
-        for p in posts
+        } for p in posts
     ]
     return JsonResponse(data, safe=False)
+
+# urls.pyから古いインポートが残っていてもエラーにならないように定義だけ残す
+class NoticeHomeView(TemplateView):
+    template_name = 'notices/base.html'
