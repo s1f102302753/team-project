@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'notices', #デジタル回覧板アプリ
     'users', # ユーザー管理アプリ
     'chatbot', #チャットボットアプリ
-    'channels'
 ]
 
 ASGI_APPLICATION = 'config.asgi.application'
