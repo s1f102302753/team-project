@@ -33,3 +33,31 @@
 </div>
 {% endblock %}
 
+<script>
+const ws = new WebSocket("ws://localhost:8888");
+
+ws.onmessage = e => {
+  const data = JSON.parse(e.data);
+
+  if (data.type === "POST") {
+    alert("新しい投稿が届きました: " + data.text);
+    // 本来はDOMに追加する
+  }
+};
+
+const form = document.querySelector("form");
+
+form.addEventListener("submit", e => {
+  e.preventDefault(); // ★ Django送信を止める
+
+  const title = form.title.value;
+  const content = form.content.value;
+
+  ws.send(JSON.stringify({
+    type: "POST",
+    text: title + " : " + content
+  }));
+
+  form.reset();
+});
+</script>
