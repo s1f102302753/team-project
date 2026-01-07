@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>WebSocket テスト</h1>
+
+    <input id="msg" type="text" placeholder="メッセージ">
+    <button onclick="sendMessage()">送信</button>
+
+    <pre id="log"></pre>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8000/ws/post/");
+
+        socket.onopen = () => {
+            log("接続成功");
+        };
+
+        socket.onmessage = (e) => {
+            log("受信: " + e.data);
+        };
+
+        socket.onerror = (e) => log("エラー: " + e);
+        socket.onclose = () => log("切断");
+
+        function sendMessage() {
+            const text = document.getElementById("msg").value;
+            socket.send(JSON.stringify({ message: text }));
+        }
+
+        function log(text) {
+            document.getElementById("log").textContent += text + "\n";
+        }
+    </script>
+</body>
+</html>
