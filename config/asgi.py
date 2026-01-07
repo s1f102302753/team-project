@@ -8,9 +8,9 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
 import os
-
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
+<<<<<<< HEAD
 from django.urls import path
 
 # Consumers をインポート（notices アプリに作る前提）
@@ -29,4 +29,18 @@ websocket_urlpatterns = [
 application = ProtocolTypeRouter({
     "http": django_app,                     # 通常の HTTP リクエスト
     "websocket": URLRouter(websocket_urlpatterns),  # WebSocket リクエスト
+=======
+from channels.auth import AuthMiddlewareStack
+import notices.routing
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            notices.routing.websocket_urlpatterns
+        )
+    ),
+>>>>>>> a3f551c282b83d33684491832a7d9398c18eb97e
 })

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page_title }}</title>
+</head>
+<body>
+
+    <h1>{{ page_title }}</h1>
+
+    <div id="post-form">
+        <h2>新規投稿</h2>
+        <input type="text" id="title-input" placeholder="タイトル" required><br>
+        <textarea id="content-input" placeholder="内容" required></textarea><br>
+        <button onclick="sendPost()">投稿する。</button>
+    </div>
+
+    <hr>
+    
+    <h2>投稿一覧</h2>
+    <div id="posts-container">
+        </div>
+
+    <input type="hidden" id="user-id-hidden" value="{{ user_id }}">
+    <input type="hidden" id="municipality-id-hidden" value="{{ municipality_id }}">
+    
+    <script>
+        // ★★★ リアルタイム通信 (JavaScript) ★★★
+
+        const SOCKET_URL = 'ws://172.28.102.179:8888'; // ソケットサーバーのURL
+        let socket;
+        
+        // ページロード時にソケット接続を試みる
+        function connectSocket() {
+            socket = new WebSocket(SOCKET_URL); // Webソケットとして接続を試みる
+            
+            socket.onopen = function(e) {
+                console.log("[open] 接続確立。初期投稿を取得中。");
+            };
+
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                console.log("[message] サーバーからデータを受信:", data);
+                
+                if (data.type === 'INIT') {
+                    // 接続時に送られてくる初期の全投稿
+                    data.posts.forEach(post => displayPost(post, true));
+                } else if (data.type === 'POST_ADDED') {
+                    // 他のクライアントからブロードキャストされた新しい投稿
+                    displayPost(data.post, false);
+                }
+            };
+
+            socket.onclose = function(event) {
+                if (event.wasClean) {
+                    console.log(`[close] 接続終了, code=${event.code} reason=${event.reason}`);
+                } else {
+                    // 例: サーバープロセスが突然終了した場合
+                    console.log('[close] 接続が切れました。再接続を試みます...');
+                    setTimeout(connectSocket, 5000); // 5秒後に再接続
+                }
+            };
+
+            socket.onerror = function(error) {
+                console.error(`[error] ${error.message}`);
+            };
+        }
+        
+        // 投稿を画面に追加する関数
+        function displayPost(post, isInitialLoad) {
+            const container = document.getElementById('posts-container');
+            const postElement = document.createElement('div');
+            postElement.className = 'post';
+            postElement.innerHTML = `
+                <h3>${post.title} (${post.municipality})</h3>
+                <p>${post.content}</p>
+                <small>投稿者: ${post.user} (${post.timestamp})</small>
+                <hr>
+            `;
+            
+            // 新しい投稿はリストの先頭に追加し、初期データは末尾に追加
+            if (isInitialLoad) {
+                container.appendChild(postElement);
+            } else {
+                container.prepend(postElement);
+            }
+        }
+        
+        // 投稿ボタンが押されたときに実行される関数
+        function sendPost() {
+            const title = document.getElementById('title-input').value;
+            const content = document.getElementById('content-input').value;
+            const userId = document.getElementById('user-id-hidden').value;
+            const municipalityId = document.getElementById('municipality-id-hidden').value;
+
+            if (!title || !content || !userId) {
+                alert("タイトル、内容、またはユーザー情報が不足しています。");
+                return;
+            }
+            
+            // JSONオブジェクトの作成
+            const messageObject = {
+              "type": "NEW_POST",
+              "title": title,
+              "content": content,
+              "user_id": parseInt(userId),         
+              "municipality_id": parseInt(municipalityId) || null // IDがない場合null
+            };
+            
+            // ソケットへ送信
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify(messageObject));
+                // フォームをクリア
+                document.getElementById('title-input').value = '';
+                document.getElementById('content-input').value = '';
+            } else {
+                alert("サーバーとの接続が確立されていません。");
+                connectSocket();
+            }
+        }
+
+        // ページロード時の初期実行
+        connectSocket();
+    </script>
+
+</body>
+</html>

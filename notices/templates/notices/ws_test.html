@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <body>
@@ -33,3 +34,37 @@
     </script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+
+    <script>
+        const socket = new WebSocket(
+            "ws://" + window.location.host + "/ws/notices/"
+        );
+
+        socket.onopen = function () {
+            console.log("WebSocket connected");
+        };
+
+        socket.onmessage = function (event) {
+            console.log("Received:", event.data);
+        };
+
+        socket.onclose = function () {
+            console.log("WebSocket closed");
+        };
+
+        socket.onerror = function (error) {
+            console.error("WebSocket error:", error);
+        };
+    </script>
+</body>
+</html>
+>>>>>>> a3f551c282b83d33684491832a7d9398c18eb97e
