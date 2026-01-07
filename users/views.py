@@ -19,7 +19,7 @@ class CustomLoginView(LoginView):
     template_name = 'users/login.html'  # ログインフォームのテンプレート
     def get_success_url(self):
         # ログイン成功後に回覧板ページへ
-        return reverse_lazy('notices:home')  # noticesアプリの home にリダイレクト
+        return reverse_lazy('notices:notices_list')  # noticesアプリの home にリダイレクト
     
 class SignUpView(CreateView):
     model = CustomUser

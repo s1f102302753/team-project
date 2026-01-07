@@ -143,3 +143,12 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 # ログイン必須ページで未ログインの場合のリダイレクト先
 LOGIN_URL = '/users/login/'
+
+
+# config/settings.py
+
+# ログイン成功後のリダイレクト先を「お知らせ一覧」に設定
+LOGIN_REDIRECT_URL = 'notices:notices_list'
+
+# ログアウト後の遷移先（お好みで。ログイン画面に戻すのが一般的です）
+LOGOUT_REDIRECT_URL = 'users:login'
