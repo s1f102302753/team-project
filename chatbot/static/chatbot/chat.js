@@ -26,7 +26,7 @@ document.getElementById("upload-form").addEventListener("submit", function(event
     })
     .then(response => response.json())
     .then(data => {
-        alert("PDF Uploaded!");
+        alert("PDF のインデックス作成が完了しました！");
         console.log(data);
     })
     .catch(error => console.error("Upload Error:", error));
@@ -51,7 +51,9 @@ document.getElementById("chat-form").addEventListener("submit", function(event){
     .then(data => {
         let box = document.getElementById("chatbox");
         box.innerHTML += "You: " + question + "\n";
-        box.innerHTML += "Bot: " + data.answer + "\n\n";
+
+        let reply = data.answer ? data.answer : "Error: " + data.error;
+        box.innerHTML += "Bot: " + reply + "\n\n";
     })
     .catch(error => console.error("Ask Error:", error));
 });
